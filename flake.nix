@@ -31,13 +31,26 @@
           buildInputs = with pkgs; [
             nodejs_20
             corepackEnable
-            erlang
+            erlang_26
             gleam
             rebar3
-          ];
+          ]
+
+          # For file_system on Linux.
+          # ++ lib.optionals stdenv.isLinux [ inotify-tools wxGTK ]
+
+          # For file_system on macOS.
+          ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
+            # For file_system on macOS.
+            CoreFoundation
+            CoreServices
+            # wxmac
+          ]);
+
           shellHook = ''
             ${pkgs.gleam}/bin/gleam --version
           '';
+
         };
       };
     });
