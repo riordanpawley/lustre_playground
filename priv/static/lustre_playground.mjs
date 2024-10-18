@@ -450,9 +450,6 @@ function do_take(loop$list, loop$n, loop$acc) {
 function take(list, n) {
   return do_take(list, n, toList([]));
 }
-function new$2() {
-  return toList([]);
-}
 function do_append(loop$first, loop$second) {
   while (true) {
     let first2 = loop$first;
@@ -1784,7 +1781,7 @@ var Set2 = class extends CustomType {
     this.dict = dict;
   }
 };
-function new$4() {
+function new$3() {
   return new Set2(new$());
 }
 
@@ -1812,7 +1809,7 @@ var Init = class extends CustomType {
 function is_empty_element_diff(diff2) {
   return isEqual(diff2.created, new$()) && isEqual(
     diff2.removed,
-    new$4()
+    new$3()
   ) && isEqual(diff2.updated, new$());
 }
 
@@ -2496,6 +2493,11 @@ function input(attrs) {
 function on2(name, handler) {
   return on(name, handler);
 }
+function on_click(msg) {
+  return on2("click", (_) => {
+    return new Ok(msg);
+  });
+}
 function value2(event2) {
   let _pipe = event2;
   return field("target", field("value", string))(
@@ -2552,7 +2554,7 @@ function update(model, msg) {
       let todos = (() => {
         let _pipe = model[1];
         return filter(_pipe, (todoo) => {
-          return index2 === todoo.key;
+          return index2 !== todoo.key;
         });
       })();
       return [text3, todos];
@@ -2574,7 +2576,7 @@ function update(model, msg) {
   return [new_model, none()];
 }
 function init2(_) {
-  let model = ["", new$2()];
+  let model = ["", toList([new Todo(0, "hi")])];
   let effect = none();
   return [model, effect];
 }
@@ -2619,7 +2621,24 @@ function view(model) {
             (todoo, key) => {
               return [
                 to_base8(key),
-                li(toList([]), toList([text2(todoo.text)]))
+                li(
+                  toList([]),
+                  toList([
+                    div(
+                      toList([class$("gap-2 flex")]),
+                      toList([
+                        text2(todoo.text),
+                        button(
+                          toList([
+                            class$("text-blue-500"),
+                            on_click(new TodoRemoved(key))
+                          ]),
+                          toList([text2("Remove")])
+                        )
+                      ])
+                    )
+                  ])
+                )
               ];
             }
           );
@@ -2636,7 +2655,7 @@ function main() {
     throw makeError(
       "let_assert",
       "lustre_playground",
-      86,
+      100,
       "main",
       "Pattern match failed, no pattern matched the value.",
       { value: $ }

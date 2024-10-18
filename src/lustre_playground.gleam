@@ -27,7 +27,7 @@ pub fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
     TodoRemoved(index), text -> {
       let todos =
         model.1
-        |> list.filter(fn(todoo) { index == todoo.key })
+        |> list.filter(fn(todoo) { index != todoo.key })
       #(text, todos)
     }
     TodoAdded, text -> {
@@ -43,7 +43,7 @@ pub fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
 }
 
 pub fn init(_) -> #(Model, Effect(Msg)) {
-  let model = #("", list.new())
+  let model = #("", [Todo(0, "hi")])
   let effect = effect.none()
   #(model, effect)
 }
@@ -74,7 +74,21 @@ pub fn view(model: Model) -> Element(Msg) {
     element.keyed(html.ul([], _), {
       model.1
       |> list.index_map(fn(todoo, key) {
-        #(int.to_base8(key), html.li([], [html.text(todoo.text)]))
+        #(
+          int.to_base8(key),
+          html.li([], [
+            html.div([attribute.class("gap-2 flex")], [
+              html.text(todoo.text),
+              html.button(
+                [
+                  attribute.class("text-blue-500"),
+                  event.on_click(TodoRemoved(key)),
+                ],
+                [html.text("Remove")],
+              ),
+            ]),
+          ]),
+        )
       })
     }),
   ])
